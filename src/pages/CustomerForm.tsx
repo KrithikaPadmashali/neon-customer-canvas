@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,11 +7,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { useCustomers } from "@/contexts/CustomerContext";
 
 const steps = [
   "Personal Details",
   "Identity Proof",
-  "Contact Info",
+  "Contact Info", 
   "Address",
   "Review",
 ];
@@ -20,6 +20,7 @@ const steps = [
 const CustomerForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
+  const { addCustomer } = useCustomers();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -53,10 +54,8 @@ const CustomerForm = () => {
   };
 
   const handleSubmit = () => {
-    // Here we would normally send the data to an API
+    addCustomer(formData);
     toast.success("Customer added successfully!");
-    
-    // Navigate back to customers list
     setTimeout(() => {
       navigate("/customers");
     }, 1500);

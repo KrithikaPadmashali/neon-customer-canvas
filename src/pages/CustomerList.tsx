@@ -4,25 +4,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useCustomers } from "@/contexts/CustomerContext";
 
 const CustomerList = () => {
-  // Placeholder data
-  const customers = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "+1 234 567 890",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "+1 234 567 891",
-      status: "Pending",
-    },
-  ];
+  const { customers } = useCustomers();
 
   return (
     <div className="max-w-6xl mx-auto py-8">
@@ -49,7 +34,7 @@ const CustomerList = () => {
           <TableBody>
             {customers.map((customer) => (
               <TableRow key={customer.id}>
-                <TableCell>{customer.name}</TableCell>
+                <TableCell>{customer.firstName} {customer.lastName}</TableCell>
                 <TableCell>{customer.email}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
                 <TableCell>{customer.status}</TableCell>
