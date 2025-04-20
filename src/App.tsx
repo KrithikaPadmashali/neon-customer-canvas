@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CustomerForm from "./pages/CustomerForm";
 import CustomerList from "./pages/CustomerList";
+import Search from "./pages/Search";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/customers" element={<CustomerList />} />
             <Route path="/customers/new" element={<CustomerForm />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
