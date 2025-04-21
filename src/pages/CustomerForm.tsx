@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { useCustomers } from "@/contexts/CustomerContext";
+
 
 const steps = [
   "Personal Details",
@@ -33,32 +35,95 @@ const CustomerForm = () => {
     zipCode: "",
     notes: "",
   });
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData({
       ...formData,
       [field]: value,
     });
+    setSubmitError(null); // clear previous error on input change
   };
 
   const nextStep = () => {
+    setSubmitError(null);
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const previousStep = () => {
+    setSubmitError(null);
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
+  // Simple validation for demo (required fields for each step)
+  const validateStep = () => {
+    if (currentStep === 0) {
+      return formData.firstName.trim() && formData.lastName.trim();
+    }
+    if (currentStep === 1) {
+      return formData.idType.trim() && formData.idNumber.trim();
+    }
+    if (currentStep === 2) {
+      return formData.email.trim() && formData.phone.trim();
+    }
+    if (currentStep === 3) {
+      return formData.street.trim() && formData.city.trim() && formData.zipCode.trim();
+    }
+    return true;
+  };
+
   const handleSubmit = () => {
-    addCustomer(formData);
-    toast.success("Customer added successfully!");
-    setTimeout(() => {
-      navigate("/customers");
-    }, 1500);
+    // check required fields
+    let missingFields = [];
+    if (!formData.firstName.trim()) missingFields.push("First Name");
+    if (!formData.lastName.trim()) missingFields.push("Last Name");
+    if (!formData.idType.trim()) missingFields.push("ID Type");
+    if (!formData.idNumber.trim()) missingFields.push("ID Number");
+    if (!formData.email.trim()) missingFields.push("Email");
+    if (!formData.phone.trim()) missingFields.push("Phone");
+    if (!formData.street.trim()) missingFields.push("Street");
+    if (!formData.city.trim()) missingFields.push("City");
+    if (!formData.zipCode.trim()) missingFields.push("ZIP Code");
+    if (missingFields.length > 0) {
+      const errorMsg = `Please fill in: ${missingFields.join(", ")}`;
+      setSubmitError(errorMsg);
+
+      toast.error(errorMsg, {
+        style: {
+          background: "#FFDEE2",
+          color: "#ea384c",
+          border: "1px solid #ea384c",
+        },
+      });
+      return;
+    }
+
+    try {
+      addCustomer(formData);
+      toast.success("Customer added successfully!", {
+        style: {
+          background: "#F2FCE2",
+          color: "#1A1F2C",
+          border: "1px solid #8B5CF6",
+        },
+      });
+      setTimeout(() => {
+        navigate("/customers");
+      }, 1200);
+    } catch (err) {
+      setSubmitError("Unable to save customer. Please try again.");
+      toast.error("Unable to save customer. Please try again.", {
+        style: {
+          background: "#FFDEE2",
+          color: "#ea384c",
+          border: "1px solid #ea384c",
+        },
+      });
+    }
   };
 
   return (
@@ -222,6 +287,14 @@ const CustomerForm = () => {
             </div>
           )}
 
+          {/* Error message area */}
+          {submitError && (
+            <div className="rounded-md border border-[#ea384c] bg-[#FFDEE2] text-[#ea384c] px-4 py-3 flex items-center gap-2 mb-2 text-sm font-semibold shadow">
+              <svg width={20} className="stroke-[#ea384c]" height={20} fill="none" viewBox="0 0 24 24"><circle cx={12} cy={12} r={10} strokeWidth={2}/><path strokeWidth={2} d="M12 8v4m0 4h.01"/></svg>
+              {submitError}
+            </div>
+          )}
+
           <div className="flex justify-between pt-4">
             <Button
               type="button"
@@ -243,6 +316,7 @@ const CustomerForm = () => {
             ) : (
               <Button
                 type="button"
+                disabled={!validateStep()}
                 onClick={nextStep}
                 className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
               >
@@ -257,3 +331,4 @@ const CustomerForm = () => {
 };
 
 export default CustomerForm;
+
